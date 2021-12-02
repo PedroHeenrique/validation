@@ -17,8 +17,8 @@ import java.util.Map;
 public class ValidationController {
 
     @PostMapping("/salvar")
-    private ResponseEntity<String> salvarCliente(@RequestBody @Valid ClienteModel clienteModel){
-        return ResponseEntity.ok("");
+    private ResponseEntity<ClienteModel> salvarCliente(@RequestBody @Valid ClienteModel clienteModel){
+        return ResponseEntity.ok(clienteModel);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
