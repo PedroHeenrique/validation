@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/cliente")
+@RequestMapping("api/user")
 public class ValidationController {
 
     @PostMapping("/salvar")
