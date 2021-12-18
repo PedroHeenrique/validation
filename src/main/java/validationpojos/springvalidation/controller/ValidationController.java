@@ -1,38 +1,38 @@
 package validationpojos.springvalidation.controller;
 
 
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import validationpojos.springvalidation.model.ClienteModel;
+import validationpojos.springvalidation.model.UserModel;
+import validationpojos.springvalidation.repository.UserRepository;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
-@RequestMapping("api/cliente")
+@RequestMapping("/api/user")
 public class ValidationController {
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
 
-    @PostMapping("/salvar")
-    private ResponseEntity<ClienteModel> salvarCliente(@RequestBody @Valid ClienteModel clienteModel){
-        return ResponseEntity.ok(clienteModel);
+    @Autowired
+    public ValidationController(UserRepository userRepository, PasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handlerValidationException(MethodArgumentNotValidException exception){
-        Map<String,String> errors = new HashMap<>();
-        exception.getBindingResult()
-                .getAllErrors()
-                .forEach(erro -> {
-                    String fieldName =((FieldError)erro).getField();
-                    String errorMessage= erro.getDefaultMessage();
-                    errors.put(fieldName,errorMessage);
-                });
-        return  errors;
+    @GetMapping("/findAll")
+    public ResponseEntity<List<UserModel>> listTodos(){
+        return ResponseEntity.ok(userRepository.findAll());
     }
+
+    @PostMapping()
+    public ResponseEntity<UserModel>save(@RequestBody @Valid UserModel user){
+        user.setPassword(encoder.encode(user.getPassword()));
+        return ResponseEntity.ok(userRepository.save(user));
+    }
+
 
 }
